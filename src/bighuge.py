@@ -1,8 +1,5 @@
 import warnings
 
-from django.core.exceptions import ImproperlyConfigured
-from django.conf import settings
-
 import requests
 
 
@@ -10,13 +7,12 @@ class WordLookup(object):
 
     BASE_URL = "http://words.bighugelabs.com/api/2/{api_key}/{word}/json"
 
-    def __init__(self, word):
+    def __init__(self, settings, word):
         self.word = word
         try:
-            self._api_key = settings.BIGHUGE_API_KEY
-        except AttributeError:
-            raise ImproperlyConfigured(
-                "Please set the value of the BIGHUGE_API_KEY setting")
+            self._api_key = settings["API_KEY"]
+        except KeyError:
+            raise Exception("Please set the value of the API_KEY setting")
 
     @property
     def url(self):
@@ -40,3 +36,18 @@ class WordLookup(object):
         for word_type, data in all_data.iteritems():
             if operator in data:
                 yield word_type, data[operator]
+
+
+class Library(object):
+
+    def __init__(self, settings):
+        self.settings = settings
+
+    def _find_related_word(self, word, operator):
+        lookup = WordLookup(self.settings, word)
+        return list(lookup.get_data(operator))
+
+    def find_synonyms(self, word):
+        for word_type, word_list in self._find_related_word(word, "syn"):
+            for word in word_list:
+                yield word_type, word

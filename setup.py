@@ -4,9 +4,9 @@ try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
-setup(name="django-bighuge",
+setup(name="bighuge-thesaurus",
       author="Joel Cross",
-      url="http://github.com/ukch/django-bighuge",
+      url="http://github.com/ukche/bighuge-thesaurus",
       version='0.1',
       packages=['bighuge'],
       package_dir={'': 'src'},
